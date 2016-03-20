@@ -23,14 +23,20 @@ func main() {
   }
 
   urls := strings.Split(os.Args[1], ",")
+
+  platforms := []string{}
+  if len(os.Args) > 2 {
+    platforms = strings.Split(os.Args[2], ",")
+  }
+
   for _, url := range urls {
-    aggregated := socol.CollectStats(url)
+    aggregated := socol.CollectStats(url, platforms)
 
     body, error := json.Marshal(aggregated)
     if error != nil {
       panic(error)
     }
-    fmt.Println(string(body))
 
+    fmt.Println(string(body))
   }
 }

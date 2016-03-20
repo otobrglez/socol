@@ -16,7 +16,11 @@ import (
   "strings"
   "regexp"
   "strconv"
-  _ "os"
+  "math/rand"
+  "github.com/fatih/structs"
+  "github.com/dyatlov/go-opengraph/opengraph"
+  "os"
+  "crypto/tls"
 )
 
 type Stat struct {
@@ -137,6 +141,7 @@ var platforms []Platform = []Platform{
     name:"reddit",
     statsUrl: "https://www.reddit.com/api/info.json?&url=%s",
     parseWith: func(r *http.Response) (Stat, error) {
+      //TODO: Implement this
       body, error := ioutil.ReadAll(r.Body)
       if error != nil {
         return Stat{}, error
@@ -155,6 +160,88 @@ var platforms []Platform = []Platform{
       }, nil
     },
   },
+  Platform{
+    enabled: true,
+    name: "buffer",
+    statsUrl: "https://api.bufferapp.com/1/links/shares.json?url=%s",
+    parseWith: func(r *http.Response) (Stat, error) {
+      body, error := ioutil.ReadAll(r.Body)
+      if error != nil {
+        return Stat{}, error
+      }
+
+      var jsonBlob map[string]interface{}
+      if err := json.Unmarshal(body, &jsonBlob); err != nil {
+        return Stat{}, err
+      }
+
+      return Stat{
+        data: map[string]interface{}{"count": jsonBlob["shares"]},
+      }, nil
+    },
+  },
+  Platform{
+    enabled: true,
+    name: "stumbleupon",
+    statsUrl: "http://www.stumbleupon.com/services/1.01/badge.getinfo?url=%s",
+    parseWith: func(r *http.Response) (Stat, error) {
+      body, error := ioutil.ReadAll(r.Body)
+      if error != nil {
+        return Stat{}, error
+      }
+
+      var jsonBlob map[string]interface{}
+      if err := json.Unmarshal(body, &jsonBlob); err != nil {
+        return Stat{}, err
+      }
+
+      result := jsonBlob["result"].(map[string]interface{})
+      count := float64(0)
+
+      if result["in_index"] == true {
+        p := reflect.TypeOf(result["views"])
+        if p.Kind() == reflect.String {
+          vInt, _ := strconv.Atoi(result["views"].(string))
+          count = float64(vInt)
+        } else if p.Kind() == reflect.Float64 {
+          count = float64(result["views"].(float64))
+        } else {
+          panic("stumbleupon - no idea ;/")
+        }
+      }
+
+      return Stat{
+        data: map[string]interface{}{"count": count},
+      }, nil
+    },
+  },
+  Platform{
+    enabled: true,
+    name: "origin",
+    statsUrl: "%s",
+    parseWith: func(r *http.Response) (Stat, error) {
+      og := opengraph.NewOpenGraph()
+      err := og.ProcessHTML(r.Body)
+      if err != nil {
+        return Stat{}, err
+      }
+
+      data := map[string]interface{}{}
+      asMap := structs.Map(og)
+      for k, v := range asMap {
+        if v != nil && v != "" {
+          val := reflect.ValueOf(v)
+          if val.Kind() == reflect.Ptr || val.Kind() == reflect.Slice || val.Kind() == reflect.Map {
+            // TODO: Do something if its pointer
+          } else {
+            data[k] = v
+          }
+        }
+      }
+
+      return Stat{data: data, }, nil
+    },
+  },
 }
 
 func (platform Platform) doRequest(lookupUrl string, stats chan <- Stat, errors chan *error) {
@@ -162,11 +249,30 @@ func (platform Platform) doRequest(lookupUrl string, stats chan <- Stat, errors 
   fullUrl := fmt.Sprintf(platform.statsUrl, lookupUrl)
   logger.Println(platform.name, "Requesting", fullUrl)
 
-  response, error := http.Get(fullUrl)
+  transport := &http.Transport{
+    TLSClientConfig: &tls.Config{
+      InsecureSkipVerify: true,
+    },
+  }
+
+  client := &http.Client{
+    Timeout: time.Duration(2 * time.Second),
+    Transport: transport,
+  }
+
+  request, error := http.NewRequest("GET", fullUrl, nil)
+  request.Header.Set("User-Agent", strings.Join([]string{"Mozilla/5.0 (socol) ", strconv.Itoa(rand.Intn(1000))}, " "))
   if error != nil {
     errors <- &error
     return
   }
+
+  response, error := client.Do(request)
+  if error != nil {
+    errors <- &error
+    return
+  }
+
   fetchedIn := time.Now().Sub(start).Seconds()
 
   stat, error := platform.parseWith(response)
@@ -180,6 +286,7 @@ func (platform Platform) doRequest(lookupUrl string, stats chan <- Stat, errors 
   }
 
   stat.data["fetched_in"] = fetchedIn
+
   stat.data["completed_in"] = time.Now().Sub(start).Seconds()
 
   logger.Println(platform.name, "Completed in", stat.data["completed_in"], "s")
@@ -191,13 +298,24 @@ func (platform Platform) doRequest(lookupUrl string, stats chan <- Stat, errors 
 
 var logger *log.Logger
 
-func CollectStats(lookupUrl string) (map[string]interface{}) {
+func CollectStats(lookupUrl string, selectedPlatforms []string) (map[string]interface{}) {
+  if selectedPlatforms == nil {
+    selectedPlatforms = []string{}
+  }
 
-  logger = log.New(ioutil.Discard, "socol", log.Ldate | log.Ltime | log.Lshortfile)
+  selectedPlatforms = append(selectedPlatforms, "origin")
+
+  logLevel := os.Getenv("LOG_LEVEL")
+  if logLevel == "" {
+    logger = log.New(ioutil.Discard, "socol ", log.Ldate | log.Ltime | log.Lshortfile)
+  } else {
+    logger = log.New(os.Stdout, "socol ", log.Ldate | log.Ltime | log.Lshortfile)
+  }
+
   errors, stats, taskCount := make(chan *error), make(chan Stat), 0
 
   for _, platform := range platforms {
-    if platform.enabled {
+    if canRunPlatform(&platform, &selectedPlatforms) {
       go platform.doRequest(lookupUrl, stats, errors)
       taskCount++
     }
@@ -211,32 +329,60 @@ func CollectStats(lookupUrl string) (map[string]interface{}) {
       aggregated[stat.name] = stat.data
       taskCount--
     case e := <-errors:
-      logger.Fatal("ERROR ~~> ", (*e))
+      logger.Panicln("ERROR ~~> ", (*e))
       taskCount--
     default:
       if taskCount <= 0 {
-        total := 0
-        for _, p := range aggregated {
-          c := p.(map[string]interface{})["count"]
-          if reflect.ValueOf(c).Kind() == reflect.Int {
-            total += c.(int)
-          } else if reflect.ValueOf(c).Kind() == reflect.Float64 {
-            n, _ := strconv.Atoi(strconv.FormatFloat(c.(float64), 'f', 0, 64));
-            total += n
-          } else if reflect.ValueOf(c).Kind() == reflect.Float32 {
-            n, _ := strconv.Atoi(strconv.FormatFloat(c.(float64), 'f', 0, 32));
-            total += n
-          }else {
-            logger.Fatal("Can't cast...")
-          }
-        }
-
-        aggregated["total"] = map[string]interface{}{"total": total}
-
-        return aggregated
+        return aggregateAndCombine(aggregated)
       }
     }
   }
+}
+
+func canRunPlatform(platform *Platform, selectedPlatforms *[]string) (canRun bool) {
+  canRun = false
+  if platform.name == "origin" {
+    return true
+  }
+
+  if platform.enabled == false {
+    return false
+  }
+
+  if len(*selectedPlatforms) == 1 {
+    return true
+  }
+
+  for _, name := range *selectedPlatforms {
+    if platform.name == name && platform.enabled == true {
+      canRun = true
+      return true
+    }
+  }
+
+  return
+}
+
+func aggregateAndCombine(results map[string]interface{}) (map[string]interface{}) {
+  total := 0
+  for _, p := range results {
+    c := p.(map[string]interface{})["count"]
+    if reflect.ValueOf(c).Kind() == reflect.Int {
+      total += c.(int)
+    } else if reflect.ValueOf(c).Kind() == reflect.Float64 {
+      n, _ := strconv.Atoi(strconv.FormatFloat(c.(float64), 'f', 0, 64));
+      total += n
+    } else if reflect.ValueOf(c).Kind() == reflect.Float32 {
+      n, _ := strconv.Atoi(strconv.FormatFloat(c.(float64), 'f', 0, 32));
+      total += n
+    } else {
+      // logger.Fatal("Can't cast...")
+    }
+  }
+
+  results["meta"] = map[string]interface{}{"total": total}
+
+  return results
 }
 
 func CollectStatsFor(lookupUrl string, sites interface{}) {
