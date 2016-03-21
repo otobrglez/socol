@@ -75,7 +75,7 @@ func main() {
   logger.Println("socol-server on", port)
   error := http.ListenAndServe(":" + strconv.Itoa(port), nil)
   if error != nil {
-    errorsLogger.Fatal("Error starting!", port)
+    errorsLogger.Fatal("Error starting on ", port)
     os.Exit(2)
   } else {
     logger.Println("Started.")
