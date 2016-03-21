@@ -1,0 +1,13 @@
+{
+  "name": "socol",
+  "description": "Social metrics collector written in Go.",
+  "keywords": [
+    "go",
+    "social",
+    "analytics"
+  ],
+  "image": "heroku/go:1.6",
+  "mount_dir": "src/github.com/otobrglez/socol",
+  "website": "http://github.com/otobrglez/socol",
+  "repository": "http://github.com/otobrglez/socol"
+}
