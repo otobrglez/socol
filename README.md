@@ -28,7 +28,6 @@ Running [socol][socol] server via Docker.
 ```bash
 docker run -ti -p 5000:5000 otobrglez/socol
 
-
 curl -s <docker_host>:5000/stats\?url=http://www.facebook.com | python -mjson.tool
 ```
 
