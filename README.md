@@ -92,3 +92,4 @@ Response from service.
 [docker-pulls-badge]: https://img.shields.io/docker/pulls/otobrglez/socol.svg
 [docker-stars-badge]: https://img.shields.io/docker/stars/otobrglez/socol.svg
 [docker-hub]: https://hub.docker.com/r/otobrglez/socol/
+
