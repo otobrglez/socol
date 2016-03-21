@@ -67,7 +67,7 @@ func main() {
   http.HandleFunc("/stats", statsHandler)
 
   portAsString := os.Getenv("PORT")
-  port := 6000
+  port := 5000
   if portAsString != "" {
     port, _ = strconv.Atoi(portAsString)
   }
