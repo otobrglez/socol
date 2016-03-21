@@ -10,5 +10,5 @@ Social metrics collector written in Go.
 - [Oto Brglez][me]
 
 [me]: https://github.com/otobrglez
-[travis-ci]: https://travis-ci.org/otobrglez/rss-machine
-[travis-ci-badge]: https://travis-ci.org/otobrglez/rss-machine.svg?branch=master
+[travis-ci]: https://travis-ci.org/otobrglez/socol
+[travis-ci-badge]: https://travis-ci.org/otobrglez/socol.svg?branch=master
