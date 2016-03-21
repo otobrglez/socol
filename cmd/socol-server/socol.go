@@ -4,23 +4,25 @@ import (
   "net/http"
   "log"
   "os"
-  "io/ioutil"
   "strconv"
   "encoding/json"
   "runtime"
   "github.com/otobrglez/socol"
   "strings"
+  "time"
 )
 
 func statsHandler(w http.ResponseWriter, r *http.Request) {
-  w.Header().Set("Content-Type", "application/json")
-
+  w.Header().Set("Content-Type", "application/json; charset=utf-8")
+  start := time.Now()
   query := r.URL.Query()
   url := query.Get("url")
 
   if url == "" {
-    json, _ := json.Marshal(map[string]interface{}{"error": "Missing url."})
+    error := "Missing required URL."
+    json, _ := json.Marshal(map[string]interface{}{"error": error})
     http.Error(w, string(json), http.StatusBadRequest)
+    errorsLogger.Println("Failed", error)
     return
   }
 
@@ -33,14 +35,15 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
   body, error := json.Marshal(aggregated)
   if error != nil {
-    http.Error(w, error.Error(), http.StatusInternalServerError)
+    error := "Error compiling JSON."
+    json, _ := json.Marshal(map[string]interface{}{"error": error})
+    http.Error(w, string(json), http.StatusInternalServerError)
     return
   }
 
+  logger.Println("Compiled stats for", url, "in", time.Now().Sub(start).Seconds(), "sec.")
   w.Write(body)
 }
-
-var logger *log.Logger
 
 func init() {
   if cpu := runtime.NumCPU(); cpu == 1 {
@@ -50,13 +53,12 @@ func init() {
   }
 }
 
+var logger *log.Logger
+var errorsLogger *log.Logger
+
 func main() {
-  logLevel := os.Getenv("LOG_LEVEL")
-  if logLevel == "" {
-    logger = log.New(ioutil.Discard, "server ", log.Ldate | log.Ltime | log.Lshortfile)
-  } else {
-    logger = log.New(os.Stdout, "server ", log.Ldate | log.Ltime | log.Lshortfile)
-  }
+  logger = log.New(os.Stdout, "socol-server ", log.Ldate | log.Ltime | log.Lshortfile)
+  errorsLogger = log.New(os.Stderr, "socol-server ", log.Ldate | log.Ltime | log.Lshortfile)
 
   http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
     w.Write([]byte("socol."))
@@ -64,11 +66,16 @@ func main() {
 
   http.HandleFunc("/stats", statsHandler)
 
-  port := 8080
-  logger.Println("Starting server on", port)
+  portAsString := os.Getenv("PORT")
+  port := 6000
+  if portAsString != "" {
+    port, _ = strconv.Atoi(portAsString)
+  }
+
+  logger.Println("socol-server on", port)
   error := http.ListenAndServe(":" + strconv.Itoa(port), nil)
   if error != nil {
-    logger.Fatal("Error starting!", port)
+    errorsLogger.Fatal("Error starting!", port)
     os.Exit(2)
   } else {
     logger.Println("Started.")

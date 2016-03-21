@@ -1,9 +1,5 @@
 package socol
 
-/*
-  - https://github.com/abeMedia/shareCount/blob/master/share_count.php
-*/
-
 import (
   "fmt"
   "reflect"
@@ -286,7 +282,6 @@ func (platform Platform) doRequest(lookupUrl string, stats chan <- Stat, errors 
   }
 
   stat.data["fetched_in"] = fetchedIn
-
   stat.data["completed_in"] = time.Now().Sub(start).Seconds()
 
   logger.Println(platform.name, "Completed in", stat.data["completed_in"], "s")
@@ -297,6 +292,7 @@ func (platform Platform) doRequest(lookupUrl string, stats chan <- Stat, errors 
 }
 
 var logger *log.Logger
+var errorsLogger *log.Logger
 
 func CollectStats(lookupUrl string, selectedPlatforms []string) (map[string]interface{}) {
   if selectedPlatforms == nil {
@@ -308,8 +304,10 @@ func CollectStats(lookupUrl string, selectedPlatforms []string) (map[string]inte
   logLevel := os.Getenv("LOG_LEVEL")
   if logLevel == "" {
     logger = log.New(ioutil.Discard, "socol ", log.Ldate | log.Ltime | log.Lshortfile)
+    errorsLogger = log.New(ioutil.Discard, "socol ", log.Ldate | log.Ltime | log.Lshortfile)
   } else {
     logger = log.New(os.Stdout, "socol ", log.Ldate | log.Ltime | log.Lshortfile)
+    errorsLogger = log.New(os.Stderr, "socol ", log.Ldate | log.Ltime | log.Lshortfile)
   }
 
   errors, stats, taskCount := make(chan *error), make(chan Stat), 0
@@ -328,8 +326,8 @@ func CollectStats(lookupUrl string, selectedPlatforms []string) (map[string]inte
     case stat := <-stats:
       aggregated[stat.name] = stat.data
       taskCount--
-    case e := <-errors:
-      logger.Panicln("ERROR ~~> ", (*e))
+    case error := <-errors:
+      errorsLogger.Println(*error)
       taskCount--
     default:
       if taskCount <= 0 {
@@ -381,12 +379,5 @@ func aggregateAndCombine(results map[string]interface{}) (map[string]interface{}
   }
 
   results["meta"] = map[string]interface{}{"total": total}
-
   return results
-}
-
-func CollectStatsFor(lookupUrl string, sites interface{}) {
-  fmt.Println(sites)
-  fmt.Println(reflect.TypeOf(sites))
-  fmt.Println(reflect.ValueOf(sites).Kind())
 }

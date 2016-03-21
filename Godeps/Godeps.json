@@ -1,0 +1,23 @@
+{
+	"ImportPath": "github.com/otobrglez/socol",
+	"GoVersion": "go1.6",
+	"GodepVersion": "v58",
+	"Deps": [
+		{
+			"ImportPath": "github.com/dyatlov/go-opengraph/opengraph",
+			"Rev": "41a3523719dfbe7e8f853fbd4061867543db5270"
+		},
+		{
+			"ImportPath": "github.com/fatih/structs",
+			"Rev": "73c4e3dc02a78deaba8640d5f3a8c236ec1352bf"
+		},
+		{
+			"ImportPath": "golang.org/x/net/html",
+			"Rev": "35b06af0720201bc2f326773a80767387544f8c4"
+		},
+		{
+			"ImportPath": "golang.org/x/net/html/atom",
+			"Rev": "35b06af0720201bc2f326773a80767387544f8c4"
+		}
+	]
+}
