@@ -295,7 +295,8 @@ var logger *log.Logger
 var errorsLogger *log.Logger
 
 func CollectStats(lookupUrl string, selectedPlatforms []string) (map[string]interface{}) {
-  if selectedPlatforms == nil {
+  if selectedPlatforms == nil ||
+  (len(selectedPlatforms) == 1 && selectedPlatforms[0] == "") {
     selectedPlatforms = []string{}
   }
 

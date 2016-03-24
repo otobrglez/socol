@@ -12,4 +12,4 @@ RUN go get ./... && \
 
 EXPOSE 5000
 
-CMD ["socol-server"]
+CMD ["socol-server -s -p 5000"]

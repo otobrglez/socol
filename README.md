@@ -7,6 +7,25 @@ Social metrics collector written in Go.
 [![Docker Pulls][docker-pulls-badge]][docker-hub]
 [![Docker Stars][docker-stars-badge]][docker-hub]
 	
+## Usage
+	
+```
+go get github.com/otobrglez/socol
+```
+
+Server-mode on port 6000
+
+```
+socol -s -p 6000
+```
+
+CLI mode 
+
+```
+socol -url https://golang.org/,http://www.scala-lang.org/ -platform facebook,linkedin
+```
+	
+	
 ## Platforms
 
 [socol][socol] supported collection of following metrics
