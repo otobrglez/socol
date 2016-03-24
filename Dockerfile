@@ -1,15 +1,13 @@
 FROM golang:1.6-onbuild
 
-WORKDIR /go/src/github.com/otobrglez/socol
+COPY . /go/src/app
 
-ADD . /go/src/github.com/otobrglez/socol
-
-RUN go get ./... && \
-  go get github.com/tools/godep && \
+RUN go get github.com/tools/godep && \
   godep restore && \
   godep go build && \
-  godep go install
+  godep go install && \
+  go get ./...
 
 EXPOSE 5000
 
-CMD ["socol -s -p 5000"]
+ENTRYPOINT ["/go/bin/socol", "-s"]
