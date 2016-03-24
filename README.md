@@ -15,18 +15,26 @@ go get github.com/otobrglez/socol
 
 ## Usage
 
+Collect stats for one URL.
+
+```
+socol -url https://golang.org/
+```
+
+Collect stats for multiple URLs and selected platforms.
 ```
 socol -url https://golang.org/,http://www.scala-lang.org/ -platform facebook,linkedin
 ```
 
 ## Runing as server
 
+Start it on port 6000.
+
 ```
-# Start it on port 6000
 socol -s -p 6000
 ```
 
-This app is ready to be used with [Heroku](https://heroku.com).
+This app is ready to be used with [Heroku](https://heroku.com) or [Docker (instructions)](/#Docker).
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
