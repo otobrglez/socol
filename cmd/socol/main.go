@@ -86,6 +86,11 @@ func main() {
     proxy = proxyEnv
   }
 
+  proxyEnv = os.Getenv("PROXY_MESH")
+  if proxyEnv != "" {
+    proxy = proxyEnv
+  }
+
   flag.Parse()
 
   if ! isServer {
@@ -100,7 +105,7 @@ func main() {
 
       aggregated := socol.CollectStats(url, cliPlatforms, proxy)
 
-      body, error := json.MarshalIndent(aggregated,"","  ")
+      body, error := json.MarshalIndent(aggregated, "", "  ")
       if error != nil {
         panic(error)
       }
