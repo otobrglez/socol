@@ -1,1 +1,1 @@
-web: socol-server -p $PORT
+web: socol -p $PORT
