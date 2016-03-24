@@ -32,6 +32,9 @@ Start it on port 6000.
 
 ```
 socol -s -p 6000
+
+# Try it,...
+curl "http://127.0.0.1:6000/stats?url=https://golang.org/"
 ```
 
 This app is ready to be used with [Heroku](https://heroku.com) or [Docker (instructions)](/#Docker).
