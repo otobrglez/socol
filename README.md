@@ -37,7 +37,7 @@ socol -s -p 6000
 curl "http://127.0.0.1:6000/stats?url=https://golang.org/"
 ```
 
-This app is ready to be used with [Heroku](https://heroku.com) or [Docker (instructions)](/#Docker).
+This app is ready to be used with [Heroku](https://heroku.com) or [Docker (instructions)](#docker).
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
