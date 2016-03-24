@@ -1,13 +1,23 @@
 {
   "name": "socol",
-  "description": "Social metrics collector written in Go.",
+  "description": "Social metrics collector",
   "keywords": [
     "go",
     "social",
-    "analytics"
+    "analytics",
+		"facebook",
+		"linkedin",
+		"pinterest",
+		"google",
+		"reddit",
+		"buffer",
+		"stumbleupon"
   ],
   "image": "heroku/go:1.6",
   "mount_dir": "src/github.com/otobrglez/socol",
   "website": "http://github.com/otobrglez/socol",
-  "repository": "http://github.com/otobrglez/socol"
+  "repository": "http://github.com/otobrglez/socol",
+	"env": {
+		"BUILDPACK_URL": "https://github.com/kr/heroku-buildpack-go.git"
+	}
 }

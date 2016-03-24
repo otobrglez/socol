@@ -6,26 +6,30 @@ Social metrics collector written in Go.
 [![ImageLayers][imagelayers-badge]][imagelayers]
 [![Docker Pulls][docker-pulls-badge]][docker-hub]
 [![Docker Stars][docker-stars-badge]][docker-hub]
-	
-## Usage
-	
+
+## Install
+
 ```
 go get github.com/otobrglez/socol
 ```
 
-Server-mode on port 6000
-
-```
-socol -s -p 6000
-```
-
-CLI mode 
+## Usage
 
 ```
 socol -url https://golang.org/,http://www.scala-lang.org/ -platform facebook,linkedin
 ```
-	
-	
+
+## Runing as server
+
+```
+# Start it on port 6000
+socol -s -p 6000
+```
+
+This app is ready to be used with [Heroku](https://heroku.com).
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
 ## Platforms
 
 [socol][socol] supported collection of following metrics
@@ -102,12 +106,16 @@ Response from service.
 
 - [Oto Brglez][me]
 
+## License
+
+Use it under `MIT`.
+
 [socol]: https://github.com/otobrglez/socol
 [me]: https://github.com/otobrglez
 [travis-ci]: https://travis-ci.org/otobrglez/socol
 [travis-ci-badge]: https://travis-ci.org/otobrglez/socol.svg?branch=master
-[imagelayers-badge]: https://badge.imagelayers.io/otobrglez/socol:latest.svg 
-[imagelayers]: https://imagelayers.io/?images=otobrglez/socol:latest 
+[imagelayers-badge]: https://badge.imagelayers.io/otobrglez/socol:latest.svg
+[imagelayers]: https://imagelayers.io/?images=otobrglez/socol:latest
 [docker-pulls-badge]: https://img.shields.io/docker/pulls/otobrglez/socol.svg
 [docker-stars-badge]: https://img.shields.io/docker/stars/otobrglez/socol.svg
 [docker-hub]: https://hub.docker.com/r/otobrglez/socol/
