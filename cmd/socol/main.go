@@ -33,7 +33,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
     platforms = nil
   }
 
-  aggregated := socol.CollectStats(url, platforms)
+  aggregated := socol.CollectStats(url, platforms, proxy)
 
   body, error := json.Marshal(aggregated)
   if error != nil {
@@ -72,11 +72,19 @@ var cliPlatform = "";
 
 var port = 5000;
 
+var proxy = "";
+
 func main() {
   flag.BoolVar(&isServer, "s", false, "run as server")
   flag.StringVar(&cliURL, "url", "", "url(s) to fetch")
   flag.StringVar(&cliPlatform, "platform", "", "platform(s) to fetch")
   flag.IntVar(&port, "p", 5000, "server port")
+  flag.StringVar(&proxy, "proxy", "", "proxy")
+
+  proxyEnv := os.Getenv("PROXY")
+  if proxy == "" && proxyEnv != "" {
+    proxy = proxyEnv
+  }
 
   flag.Parse()
 
@@ -90,9 +98,9 @@ func main() {
         cliPlatforms = nil
       }
 
-      aggregated := socol.CollectStats(url, cliPlatforms)
+      aggregated := socol.CollectStats(url, cliPlatforms, proxy)
 
-      body, error := json.Marshal(aggregated)
+      body, error := json.MarshalIndent(aggregated,"","  ")
       if error != nil {
         panic(error)
       }

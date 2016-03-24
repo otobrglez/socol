@@ -17,6 +17,7 @@ import (
   "github.com/dyatlov/go-opengraph/opengraph"
   "os"
   "crypto/tls"
+  "net/url"
 )
 
 type Stat struct {
@@ -72,7 +73,15 @@ var platforms []Platform = []Platform{
       }
 
       jsBody := string(body)
-      jsonBody := jsBody[strings.Index(jsBody, "(") + 1:strings.LastIndex(jsBody, ")")]
+      iStart := strings.Index(jsBody, "(")
+      iEnd := strings.LastIndex(jsBody, ")")
+
+      if iStart == -1 || iEnd == -1 {
+        error := errors.New("Something is wrong with payload.")
+        return Stat{}, error
+      }
+
+      jsonBody := jsBody[iStart + 1:iEnd]
 
       var jsonBlob map[string]interface{}
       if err := json.Unmarshal([]byte(jsonBody), &jsonBlob); err != nil {
@@ -94,7 +103,16 @@ var platforms []Platform = []Platform{
       }
 
       jsBody := string(body)
-      jsonBody := jsBody[strings.Index(jsBody, "(") + 1:strings.LastIndex(jsBody, ")")]
+
+      iStart := strings.Index(jsBody, "(")
+      iEnd := strings.LastIndex(jsBody, ")")
+
+      if iStart == -1 || iEnd == -1 {
+        error := errors.New("Something is wrong with payload.")
+        return Stat{}, error
+      }
+
+      jsonBody := jsBody[iStart + 1:iEnd]
 
       var jsonBlob map[string]interface{}
       if err := json.Unmarshal([]byte(jsonBody), &jsonBlob); err != nil {
@@ -240,7 +258,7 @@ var platforms []Platform = []Platform{
   },
 }
 
-func (platform Platform) doRequest(lookupUrl string, stats chan <- Stat, errors chan *error) {
+func (platform Platform) doRequest(lookupUrl string, proxy string, stats chan <- Stat, errorsChannel chan *error) {
   start := time.Now()
   fullUrl := fmt.Sprintf(platform.statsUrl, lookupUrl)
   logger.Println(platform.name, "Requesting", fullUrl)
@@ -251,29 +269,44 @@ func (platform Platform) doRequest(lookupUrl string, stats chan <- Stat, errors 
     },
   }
 
+  if proxy != "" {
+    proxyThing, error := url.Parse(proxy)
+    if error != nil {
+      errorsChannel <- &error
+      return
+    }
+
+    transport.Proxy = http.ProxyURL(proxyThing)
+  }
+
   client := &http.Client{
-    Timeout: time.Duration(2 * time.Second),
+    Timeout: time.Duration(3 * time.Second),
     Transport: transport,
   }
 
   request, error := http.NewRequest("GET", fullUrl, nil)
   request.Header.Set("User-Agent", strings.Join([]string{"Mozilla/5.0 (socol) ", strconv.Itoa(rand.Intn(1000))}, " "))
   if error != nil {
-    errors <- &error
+    errorsChannel <- &error
     return
   }
 
   response, error := client.Do(request)
   if error != nil {
-    errors <- &error
+    errorsChannel <- &error
     return
+  }
+
+  if response.StatusCode != http.StatusOK {
+    error := errors.New("Got non OK HTTP status at " + response.Status + "-" + fullUrl)
+    errorsChannel <- &error
   }
 
   fetchedIn := time.Now().Sub(start).Seconds()
 
   stat, error := platform.parseWith(response)
   if error != nil {
-    errors <- &error
+    errorsChannel <- &error
     return
   }
 
@@ -294,7 +327,7 @@ func (platform Platform) doRequest(lookupUrl string, stats chan <- Stat, errors 
 var logger *log.Logger
 var errorsLogger *log.Logger
 
-func CollectStats(lookupUrl string, selectedPlatforms []string) (map[string]interface{}) {
+func CollectStats(lookupUrl string, selectedPlatforms []string, proxy string) (map[string]interface{}) {
   if selectedPlatforms == nil ||
   (len(selectedPlatforms) == 1 && selectedPlatforms[0] == "") {
     selectedPlatforms = []string{}
@@ -315,7 +348,7 @@ func CollectStats(lookupUrl string, selectedPlatforms []string) (map[string]inte
 
   for _, platform := range platforms {
     if canRunPlatform(&platform, &selectedPlatforms) {
-      go platform.doRequest(lookupUrl, stats, errors)
+      go platform.doRequest(lookupUrl, proxy, stats, errors)
       taskCount++
     }
   }
