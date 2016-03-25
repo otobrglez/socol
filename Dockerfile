@@ -1,6 +1,6 @@
 FROM golang:1.6-onbuild
 
-COPY . /go/src/app
+ADD . /go/src/app
 
 RUN go get github.com/tools/godep && \
   godep restore && \

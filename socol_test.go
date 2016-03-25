@@ -1,14 +1,14 @@
-package socol
+package main
 
 import (
-  "testing"
-  "os"
-  "flag"
+	"flag"
+	"os"
+	"testing"
 )
 
 func TestMain(m *testing.M) {
-  flag.Parse()
-  os.Exit(m.Run())
+	flag.Parse()
+	os.Exit(m.Run())
 }
 
 func TestCollectStats(t *testing.T) {
