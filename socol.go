@@ -34,7 +34,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		platforms = nil
 	}
 
-	aggregated := collector.CollectStats(url, platforms, proxy)
+	aggregated := collector.New(url, platforms, proxy)
 
 	body, error := json.Marshal(aggregated)
 	if error != nil {
@@ -99,7 +99,7 @@ func main() {
 				cliPlatforms = nil
 			}
 
-			aggregated := collector.CollectStats(url, cliPlatforms, proxy)
+			aggregated := collector.New(url, cliPlatforms, proxy)
 
 			body, error := json.MarshalIndent(aggregated, "", "  ")
 			if error != nil {

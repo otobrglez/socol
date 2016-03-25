@@ -327,7 +327,7 @@ func (platform Platform) doRequest(lookupUrl string, proxy string, stats chan <-
 var logger *log.Logger
 var errorsLogger *log.Logger
 
-func CollectStats(lookupUrl string, selectedPlatforms []string, proxy string) (map[string]interface{}) {
+func New(lookupUrl string, selectedPlatforms []string, proxy string) (map[string]interface{}) {
   if selectedPlatforms == nil ||
   (len(selectedPlatforms) == 1 && selectedPlatforms[0] == "") {
     selectedPlatforms = []string{}
