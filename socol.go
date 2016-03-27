@@ -50,6 +50,13 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 var logger *log.Logger
 var errorsLogger *log.Logger
+var isServer = false
+var cliURLs = []string{}
+var cliURL = ""
+var cliPlatforms = []string{}
+var cliPlatform = ""
+var port = 5000
+var proxy = ""
 
 func init() {
 	if cpu := runtime.NumCPU(); cpu == 1 {
@@ -61,14 +68,6 @@ func init() {
 	logger = log.New(os.Stdout, "socol-cmd ", log.Ldate|log.Ltime|log.Lshortfile)
 	errorsLogger = log.New(os.Stderr, "socol-cmd ", log.Ldate|log.Ltime|log.Lshortfile)
 }
-
-var isServer = false
-var cliURLs = []string{}
-var cliURL = ""
-var cliPlatforms = []string{}
-var cliPlatform = ""
-var port = 5000
-var proxy = ""
 
 func main() {
 	flag.BoolVar(&isServer, "s", false, "run as server")
