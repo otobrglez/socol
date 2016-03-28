@@ -43,17 +43,8 @@ This app is ready to be used with [Heroku](https://heroku.com) or [Docker (instr
 
 ## Platforms
 
-[socol][socol] supported collection of following metrics
-
-```
-https://api.facebook.com/method/links.getStats?format=json&urls=%s
-http://api.pinterest.com/v1/urls/count.json?callback=call&url=%s
-http://www.linkedin.com/countserv/count/share?url=%s
-https://plusone.google.com/_/+1/fastbutton?url=%s
-https://www.reddit.com/api/info.json?&url=%s
-https://api.bufferapp.com/1/links/shares.json?url=%s
-http://www.stumbleupon.com/services/1.01/badge.getinfo?url=%s
-```
+[socol][socol] supported collection of following metrics: Bufferapp, Facebook,
+Google Plus, Linkedin, Pinterest, Pocket, Reddit, StumbleUpon, Tumblr.
 
 ## Docker
 
