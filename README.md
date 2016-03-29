@@ -26,7 +26,7 @@ Collect stats for multiple URLs and selected platforms.
 socol -url https://golang.org/,http://www.scala-lang.org/ -platform facebook,linkedin
 ```
 
-## Runing as server
+## Running as server
 
 Start it on port 6000.
 

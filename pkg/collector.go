@@ -101,8 +101,6 @@ func (platform Platform) doRequest(lookupUrl string, stats chan<- Stat, errorsCh
 		request.Header.Set("Content-Type", platform.format)
 	}
 
-	// request.Header.Set("X-Requested-With", "XMLHttpRequest")
-
 	if error != nil {
 		errorsChannel <- &error
 		return
@@ -141,7 +139,7 @@ func (platform Platform) doRequest(lookupUrl string, stats chan<- Stat, errorsCh
 	return
 }
 
-func resolveAndOG(url string) (stat Stat, urls []string, err error) {
+func resolveAndOpenGraph(url string) (stat Stat, urls []string, err error) {
 	start := time.Now()
 	stat.name = "origin"
 	err = nil
@@ -281,7 +279,7 @@ func New(lookupUrl string, selectedPlatforms []string, privateProxy string) map[
 	aggregated := map[string]interface{}{}
 	errorsCollection := []error{}
 
-	rStat, urls, rError := resolveAndOG(lookupUrl)
+	rStat, urls, rError := resolveAndOpenGraph(lookupUrl)
 	if rError != nil {
 		errorsLogger.Println(rError)
 	} else {
