@@ -91,8 +91,8 @@ func main() {
 	flag.Parse()
 
 	if !isServer {
-		cliURLs := strings.Split(cliURL, ",")
-		cliPlatforms := strings.Split(cliPlatform, ",")
+		cliURLs = strings.Split(cliURL, ",")
+		cliPlatforms = strings.Split(cliPlatform, ",")
 
 		for _, url := range cliURLs {
 			if len(cliPlatforms) == 0 ||

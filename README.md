@@ -3,6 +3,7 @@
 Social metrics collector written in Go.
 
 [![Build Status][travis-ci-badge]][travis-ci]
+[![Go Report Card][goreportcard-badge]][goreportcard]
 [![ImageLayers][imagelayers-badge]][imagelayers]
 [![Docker Pulls][docker-pulls-badge]][docker-hub]
 [![Docker Stars][docker-stars-badge]][docker-hub]
@@ -120,5 +121,6 @@ Use it under `MIT`.
 [imagelayers]: https://imagelayers.io/?images=otobrglez/socol:latest
 [docker-pulls-badge]: https://img.shields.io/docker/pulls/otobrglez/socol.svg
 [docker-stars-badge]: https://img.shields.io/docker/stars/otobrglez/socol.svg
-[docker-hub]: https://hub.docker.com/r/otobrglez/socol/
-
+[docker-hub]: https://hub.docker.com/r/otobrglez/socol/             
+[goreportcard-badge]: https://goreportcard.com/badge/otobrglez/socol
+[goreportcard]: https://goreportcard.com/report/otobrglez/socol

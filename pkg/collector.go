@@ -160,7 +160,7 @@ func resolveAndOpenGraph(url string) (stat Stat, urls []string, err error) {
 	}
 
 	request, e := http.NewRequest("GET", url, nil)
-	request.Header.Set("User-Agent", strings.Join([]string{"Mozilla/5.0 (socol) ", strconv.Itoa(rand.Intn(1000))}, " "))
+	request.Header.Set("User-Agent", "Googlebot-News")
 	if e != nil {
 		err = e
 		return
