@@ -22,15 +22,15 @@ func Reddit() Platform {
 			var jsonBlob map[string]interface{}
 			if err := json.Unmarshal(body, &jsonBlob); err != nil {
 				return Stat{}, err
-			} else {
-				pData := jsonBlob["data"].(map[string]interface{})
-				for _, ch := range pData["children"].([]interface{}) {
-					el := ch.(map[string]interface{})
-					if el["kind"] == "t3" {
-						d := el["data"].(map[string]interface{})
-						ups += d["ups"].(float64)
-						downs += d["downs"].(float64)
-					}
+			}
+
+			pData := jsonBlob["data"].(map[string]interface{})
+			for _, ch := range pData["children"].([]interface{}) {
+				el := ch.(map[string]interface{})
+				if el["kind"] == "t3" {
+					d := el["data"].(map[string]interface{})
+					ups += d["ups"].(float64)
+					downs += d["downs"].(float64)
 				}
 			}
 

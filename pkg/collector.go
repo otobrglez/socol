@@ -24,7 +24,7 @@ type Stat struct {
 type Platform struct {
 	enabled   bool
 	name      string
-	statsUrl  string
+	statsURL  string
 	parseWith func(*http.Response) (Stat, error)
 	stat      Stat
 	format    string
@@ -83,10 +83,10 @@ func buildClientAsync() (*http.Client, error) {
 	}, nil
 }
 
-func (platform Platform) doRequest(lookupUrl string, stats chan<- Stat, errorsChannel chan *error) {
+func (platform Platform) doRequest(lookupURL string, stats chan<- Stat, errorsChannel chan *error) {
 	start := time.Now()
-	fullUrl := fmt.Sprintf(platform.statsUrl, lookupUrl)
-	logger.Println(platform.name, "Requesting", fullUrl)
+	fullURL := fmt.Sprintf(platform.statsURL, lookupURL)
+	logger.Println(platform.name, "Requesting", fullURL)
 
 	client, err := buildClientAsync()
 	if err != nil {
@@ -94,7 +94,7 @@ func (platform Platform) doRequest(lookupUrl string, stats chan<- Stat, errorsCh
 		return
 	}
 
-	request, error := http.NewRequest("GET", fullUrl, nil)
+	request, error := http.NewRequest("GET", fullURL, nil)
 	request.Header.Set("User-Agent", strings.Join([]string{"Mozilla/5.0 (socol) ", strconv.Itoa(rand.Intn(1000))}, " "))
 	if platform.format != "" {
 		logger.Println("Setting content type to", platform.format)
@@ -113,7 +113,7 @@ func (platform Platform) doRequest(lookupUrl string, stats chan<- Stat, errorsCh
 	}
 
 	if response.StatusCode != http.StatusOK {
-		error := errors.New("Got non OK HTTP status at " + response.Status + "-" + fullUrl)
+		error := errors.New("Got non OK HTTP status at " + response.Status + "-" + fullURL)
 		errorsChannel <- &error
 	}
 
@@ -266,7 +266,7 @@ func init() {
 	}
 }
 
-func New(lookupUrl string, selectedPlatforms []string, privateProxy string) map[string]interface{} {
+func New(lookupURL string, selectedPlatforms []string, privateProxy string) map[string]interface{} {
 	proxy = privateProxy
 
 	if selectedPlatforms == nil ||
@@ -279,7 +279,7 @@ func New(lookupUrl string, selectedPlatforms []string, privateProxy string) map[
 	aggregated := map[string]interface{}{}
 	errorsCollection := []error{}
 
-	rStat, urls, rError := resolveAndOpenGraph(lookupUrl)
+	rStat, urls, rError := resolveAndOpenGraph(lookupURL)
 	if rError != nil {
 		errorsLogger.Println(rError)
 	} else {
@@ -290,11 +290,11 @@ func New(lookupUrl string, selectedPlatforms []string, privateProxy string) map[
 		logger.Println("Digging for", urls)
 	}
 
-	lookupUrl = urls[len(urls)-1]
+	lookupURL = urls[len(urls)-1]
 
 	for _, platform := range platforms {
 		if canRunPlatform(&platform, &selectedPlatforms) {
-			go platform.doRequest(lookupUrl, stats, errors)
+			go platform.doRequest(lookupURL, stats, errors)
 			taskCount++
 		}
 	}

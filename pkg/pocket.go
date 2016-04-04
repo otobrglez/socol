@@ -34,8 +34,6 @@ func Pocket() Platform {
 					"count": count,
 				},
 			}, nil
-
-			return Stat{}, nil
 		},
 	}
 }
