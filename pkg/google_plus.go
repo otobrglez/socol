@@ -11,7 +11,7 @@ func GooglePlus() Platform {
 	return Platform{
 		enabled:  true,
 		name:     "google_plus",
-		statsUrl: "https://plusone.google.com/_/+1/fastbutton?url=%s",
+		statsURL: "https://plusone.google.com/_/+1/fastbutton?url=%s",
 		parseWith: func(r *http.Response) (Stat, error) {
 			body, error := ioutil.ReadAll(r.Body)
 			if error != nil {

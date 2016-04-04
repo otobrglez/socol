@@ -10,7 +10,7 @@ func Bufferapp() Platform {
 	return Platform{
 		enabled:  true,
 		name:     "buffer",
-		statsUrl: "https://api.bufferapp.com/1/links/shares.json?url=%s",
+		statsURL: "https://api.bufferapp.com/1/links/shares.json?url=%s",
 		parseWith: func(r *http.Response) (Stat, error) {
 			body, error := ioutil.ReadAll(r.Body)
 			if error != nil {

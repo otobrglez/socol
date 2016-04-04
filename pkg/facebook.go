@@ -11,7 +11,7 @@ func Facebook() Platform {
 	return Platform{
 		enabled:  true,
 		name:     "facebook",
-		statsUrl: "https://api.facebook.com/method/links.getStats?format=json&urls=%s",
+		statsURL: "https://api.facebook.com/method/links.getStats?format=json&urls=%s",
 		parseWith: func(r *http.Response) (Stat, error) {
 			body, error := ioutil.ReadAll(r.Body)
 			if error != nil {

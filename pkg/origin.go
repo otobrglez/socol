@@ -11,7 +11,7 @@ func Origin() Platform {
 	return Platform{
 		enabled:  true,
 		name:     "origin",
-		statsUrl: "%s",
+		statsURL: "%s",
 		parseWith: func(r *http.Response) (Stat, error) {
 			og := opengraph.NewOpenGraph()
 			err := og.ProcessHTML(r.Body)

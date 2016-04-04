@@ -11,7 +11,7 @@ func Tumblr() Platform {
 		enabled:  true,
 		name:     "tumblr",
 		format:   "json",
-		statsUrl: "http://api.tumblr.com/v2/share/stats?url=%s",
+		statsURL: "http://api.tumblr.com/v2/share/stats?url=%s",
 		parseWith: func(r *http.Response) (Stat, error) {
 			if r.StatusCode != 200 {
 				return Stat{

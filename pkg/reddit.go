@@ -10,7 +10,7 @@ func Reddit() Platform {
 	return Platform{
 		enabled:  true,
 		name:     "reddit",
-		statsUrl: "https://www.reddit.com/api/info.json?&url=%s",
+		statsURL: "https://www.reddit.com/api/info.json?&url=%s",
 		parseWith: func(r *http.Response) (Stat, error) {
 			//TODO: Implement this
 			body, error := ioutil.ReadAll(r.Body)

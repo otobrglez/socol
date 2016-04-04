@@ -10,7 +10,7 @@ func Linkedin() Platform {
 	return Platform{
 		enabled:  true,
 		name:     "linkedin",
-		statsUrl: "http://www.linkedin.com/countserv/count/share?url=%s",
+		statsURL: "http://www.linkedin.com/countserv/count/share?url=%s",
 		format:   "jsonp",
 		parseWith: func(r *http.Response) (Stat, error) {
 			body, error := ioutil.ReadAll(r.Body)

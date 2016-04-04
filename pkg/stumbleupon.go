@@ -12,7 +12,7 @@ func Stumbleupon() Platform {
 	return Platform{
 		enabled:  true,
 		name:     "stumbleupon",
-		statsUrl: "http://www.stumbleupon.com/services/1.01/badge.getinfo?url=%s",
+		statsURL: "http://www.stumbleupon.com/services/1.01/badge.getinfo?url=%s",
 		parseWith: func(r *http.Response) (Stat, error) {
 			body, error := ioutil.ReadAll(r.Body)
 			if error != nil {

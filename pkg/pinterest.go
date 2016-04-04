@@ -10,7 +10,7 @@ func Pinterest() Platform {
 	return Platform{
 		enabled:  true,
 		name:     "pinterest",
-		statsUrl: "http://api.pinterest.com/v1/urls/count.json?callback=call&url=%s",
+		statsURL: "http://api.pinterest.com/v1/urls/count.json?callback=call&url=%s",
 		format:   "jsonp",
 		parseWith: func(r *http.Response) (Stat, error) {
 			stat := Stat{
