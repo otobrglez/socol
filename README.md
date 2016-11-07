@@ -44,8 +44,10 @@ This app is ready to be used with [Heroku](https://heroku.com) or [Docker (instr
 
 ## Platforms
 
-[socol][socol] supported collection of following metrics: Bufferapp, Facebook,
-Google Plus, Linkedin, Pinterest, Pocket, Reddit, StumbleUpon, Tumblr.
+[socol][socol] supported collection of following metrics: [Buffer](https://buffer.com/), [Facebook](http://fb.com),
+[Google Plus](https://plus.google.com/), [LinkedIn](https://www.linkedin.com/), [Pinterest](https://www.pinterest.com/), [Pocket](https://getpocket.com), [Reddit](https://www.reddit.com), [StumbleUpon](https://www.stumbleupon.com/), [Tumblr](https://www.tumblr.com/).
+
+> Why is [Twitter](https://twitter.com/) not supported? Twitter has decided to remove stats from their public interfaces. You can read more about [why on their blog](https://blog.twitter.com/2015/hard-decisions-for-a-sustainable-platform).
 
 ## Docker
 
